@@ -1,6 +1,7 @@
 from typing import Dict, ByteString
 import json
 
+#================= DATA HANDLING =====================
 
 def render_json(data: Dict):
     return json.dumps(data)
@@ -10,25 +11,54 @@ def get_bytes(resource) -> ByteString:
     return resource.encode("utf-8")
 
 
+def get_data(path, urls):
+    for k in urls:
+        if k == path:
+            func = urls[k]()
+            return func
+
+
+#================= FUNCTION VIEWS =====================
+
+def home():
+    return render_json({'index': 'page'})
+
+def echo():
+    pass
+
+
+
+#================= URLS =====================
+
+urls = {
+    "/": home
+}
+
+#================= MAIN APP =====================
+
 def app(environ: Dict, start_response):
 
-    d = {
-        "REQUEST_METHOD": environ.get("REQUEST_METHOD"),
-        "PATH_INFO": environ.get("PATH_INFO"),
-        "QUERY_STRING": environ.get("QUERY_STRING")
-    }
+    method = environ.get("REQUEST_METHOD")
+    path = environ.get("PATH_INFO")
 
-    if environ.get("PATH_INFO") == "/":
-        data = get_bytes(render_json(d))
+    if method == "GET":
+        data = get_bytes(get_data(path, urls))
+    if method == "POST":
+        data = get_bytes(get_data(path, urls))
+
+        body = environ.get("wsgi.input")
+        print(json.load(body))
+
     else:
-        start_response("404 Not Found", [])
-        return iter([get_bytes("404 error, resource not found")])
+        data = get_bytes(get_data(path, urls))
+
 
     start_response("200 OK", [
         ("Content-Type", "application/json"),
         ("Content-Length", str(len(data)))
     ])
-    for k, v in environ.items():
-        print(str(k) + ": " + str(v))
+
+
+
     return iter([data])
 
