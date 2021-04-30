@@ -44,21 +44,20 @@ def app(environ: Dict, start_response):
     if method == "GET":
         data = get_bytes(get_data(path, urls))
     if method == "POST":
+        body = environ.get("wsgi.input")
+        user_graph = json.load(body)
+
         data = get_bytes(get_data(path, urls))
 
-        body = environ.get("wsgi.input")
-        print(json.load(body))
+
 
     else:
         data = get_bytes(get_data(path, urls))
-
 
     start_response("200 OK", [
         ("Content-Type", "application/json"),
         ("Content-Length", str(len(data)))
     ])
-
-
 
     return iter([data])
 
