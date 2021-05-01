@@ -1,63 +1,65 @@
 from typing import Dict, ByteString
 import json
 
-#================= DATA HANDLING =====================
+# ================= FUNCTION VIEWS =====================
 
-def render_json(data: Dict):
-    return json.dumps(data)
+def home(method, body=None):
+    data = {"None"}
+    response_status = (0,0)
+    if method == "GET":
+        data = json.dumps({'Welcome': 'please send me some data to handle'})
+        response_status = ok_200(data)
+    elif method == "POST":
+        data = json.dumps(calculate(body))
+        response_status = ok_200(data)
 
+    return {
+        "data": data,
+        "response_status": response_status
+    }
 
-def get_bytes(resource) -> ByteString:
-    return resource.encode("utf-8")
-
-
-def get_data(path, urls):
-    for k in urls:
-        if k == path:
-            func = urls[k]()
-            return func
-
-
-#================= FUNCTION VIEWS =====================
-
-def home():
-    return render_json({'index': 'page'})
-
-def echo():
-    pass
+def calculate(graph: Dict):
+    result = {"distance": 45}
+    return result
 
 
-
-#================= URLS =====================
+# ================= URLS =====================
 
 urls = {
     "/": home
 }
 
-#================= MAIN APP =====================
+# ================ RETURN CODES =================
 
-def app(environ: Dict, start_response):
-
-    method = environ.get("REQUEST_METHOD")
-    path = environ.get("PATH_INFO")
-
-    if method == "GET":
-        data = get_bytes(get_data(path, urls))
-    if method == "POST":
-        body = environ.get("wsgi.input")
-        user_graph = json.load(body)
-
-        data = get_bytes(get_data(path, urls))
-
-
-
-    else:
-        data = get_bytes(get_data(path, urls))
-
-    start_response("200 OK", [
+def ok_200(data):
+    return ("200 OK", [
         ("Content-Type", "application/json"),
         ("Content-Length", str(len(data)))
     ])
 
-    return iter([data])
+def not_found_404():
+    return ("404 Not Found", [])
+
+def not_allowed_405():
+    return ("405 Not Allowed", [])
+
+# ================= DATA HANDLING =====================
+
+def get_bytes(resource) -> ByteString:
+    return resource.encode("utf-8")
+
+# ================= MAIN APP =====================
+
+def app(environ: Dict, start_response):
+    method = environ.get("REQUEST_METHOD")
+    path = environ.get("PATH_INFO")
+    body = environ.get("wsgi.input")
+    func = urls.get(path)
+    if func :
+        data = get_bytes(func(method, body).get("data"))
+        response_status = func(method, body).get("response_status")
+        start_response(*response_status)
+        return iter([data])
+    start_response(*not_found_404())
+    return iter([])
 
