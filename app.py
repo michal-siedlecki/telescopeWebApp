@@ -8,14 +8,33 @@ from models import Graph
 '''
 Sample request:
 
-{"beginning": "start",
-     "graph": {"a": {"c": 4, "d": 2},
-      "b": {"a": 8, "d": 7},
-      "c": {"d": 6, "end": 3},
-      "d": {"end": 1},
-      "end": {},
-      "start": {"a": 5, "b": 2}}}
-
+{
+   "beginning":"start",
+   "graph":{
+      "a":{
+         "c":4,
+         "d":2
+      },
+      "b":{
+         "a":8,
+         "d":7
+      },
+      "c":{
+         "d":6,
+         "end":3
+      },
+      "d":{
+         "end":1
+      },
+      "end":{
+         
+      },
+      "start":{
+         "a":5,
+         "b":2
+      }
+   }
+}
 
 '''
 # ================= FUNCTION VIEWS =====================
@@ -28,10 +47,11 @@ def home(method, body=None):
         response_status = ok_200(data)
     elif method == "POST":
 
-        body_dict = body.read().decode('utf-8')
-        print(body_dict)
-        graph_request = json.loads(body_dict)
-        data = json.dumps(calculate(graph_request))
+        body_str = body.read().decode('utf-8')
+        body_dict = json.loads(body_str)
+
+        data = calculate(body_dict)
+
         response_status = ok_200(data)
 
     return {
@@ -44,7 +64,7 @@ def calculate(graph: Dict):
     graph_start = graph.get('beginning')
     graph = Graph(graph_dict, graph_start)
     result = graph.count_shortest_path()
-    return result
+    return str(result)
 
 
 # ================= URLS =====================
@@ -80,8 +100,9 @@ def app(environ: Dict, start_response):
     body = environ.get("wsgi.input")
     func = urls.get(path)
     if func :
-        data = get_bytes(func(method, body).get("data"))
-        response_status = func(method, body).get("response_status")
+        result = func(method, body)
+        data = get_bytes(result.get("data"))
+        response_status = result.get("response_status")
         start_response(*response_status)
         return iter([data])
     start_response(*not_found_404())
