@@ -1,6 +1,23 @@
 from typing import Dict, ByteString
 import json
 
+import gunicorn.http.body
+
+from models import Graph
+
+'''
+Sample request:
+
+{"beginning": "start",
+     "graph": {"a": {"c": 4, "d": 2},
+      "b": {"a": 8, "d": 7},
+      "c": {"d": 6, "end": 3},
+      "d": {"end": 1},
+      "end": {},
+      "start": {"a": 5, "b": 2}}}
+
+
+'''
 # ================= FUNCTION VIEWS =====================
 
 def home(method, body=None):
@@ -10,7 +27,11 @@ def home(method, body=None):
         data = json.dumps({'Welcome': 'please send me some data to handle'})
         response_status = ok_200(data)
     elif method == "POST":
-        data = json.dumps(calculate(body))
+
+        body_dict = body.read().decode('utf-8')
+        print(body_dict)
+        graph_request = json.loads(body_dict)
+        data = json.dumps(calculate(graph_request))
         response_status = ok_200(data)
 
     return {
@@ -19,7 +40,10 @@ def home(method, body=None):
     }
 
 def calculate(graph: Dict):
-    result = {"distance": 45}
+    graph_dict = graph.get('graph')
+    graph_start = graph.get('beginning')
+    graph = Graph(graph_dict, graph_start)
+    result = graph.count_shortest_path()
     return result
 
 
