@@ -1,7 +1,5 @@
-from typing import Dict, ByteString
 import json
-
-import gunicorn.http.body
+from typing import Dict, ByteString, Callable, AnyStr
 
 from models import Graph
 
@@ -37,29 +35,28 @@ Sample request:
 }
 
 '''
+
+
 # ================= FUNCTION VIEWS =====================
 
-def home(method, body=None):
+def home(method: Callable, body=None) -> Dict:
     data = {"None"}
-    response_status = (0,0)
+    response_status = (0, 0)
     if method == "GET":
         data = json.dumps({'Welcome': 'please send me some data to handle'})
         response_status = ok_200(data)
     elif method == "POST":
-
         body_str = body.read().decode('utf-8')
         body_dict = json.loads(body_str)
-
         data = calculate(body_dict)
-
         response_status = ok_200(data)
-
     return {
         "data": data,
         "response_status": response_status
     }
 
-def calculate(graph: Dict):
+
+def calculate(graph: Dict) -> AnyStr:
     graph_dict = graph.get('graph')
     graph_start = graph.get('beginning')
     graph = Graph(graph_dict, graph_start)
@@ -73,33 +70,38 @@ urls = {
     "/": home
 }
 
+
 # ================ RETURN CODES =================
 
-def ok_200(data):
-    return ("200 OK", [
+def ok_200(data: AnyStr) -> tuple:
+    return "200 OK", [
         ("Content-Type", "application/json"),
         ("Content-Length", str(len(data)))
-    ])
+    ]
 
-def not_found_404():
-    return ("404 Not Found", [])
 
-def not_allowed_405():
-    return ("405 Not Allowed", [])
+def not_found_404() -> tuple:
+    return "404 Not Found", []
+
+
+def not_allowed_405() -> tuple:
+    return "405 Not Allowed", []
+
 
 # ================= DATA HANDLING =====================
 
 def get_bytes(resource) -> ByteString:
     return resource.encode("utf-8")
 
+
 # ================= MAIN APP =====================
 
-def app(environ: Dict, start_response):
+def app(environ: Dict, start_response)-> iter:
     method = environ.get("REQUEST_METHOD")
     path = environ.get("PATH_INFO")
     body = environ.get("wsgi.input")
     func = urls.get(path)
-    if func :
+    if func:
         result = func(method, body)
         data = get_bytes(result.get("data"))
         response_status = result.get("response_status")
@@ -107,4 +109,3 @@ def app(environ: Dict, start_response):
         return iter([data])
     start_response(*not_found_404())
     return iter([])
-
