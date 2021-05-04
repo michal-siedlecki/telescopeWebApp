@@ -11,7 +11,7 @@ It can be used also to learn concepts of http and backend web development.
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
-* You have installed `python` >= 3.7.2
+* You have installed `python` >= 3.6.2
 * You have a `<Windows/Linux/Mac>` machine.
 * You will have to install a HTTP web server like `Green Unicorn` in case Linux/Mac or `Waitress` in case of Windows
 
@@ -22,12 +22,16 @@ To install Telescope, follow these steps:
 Linux and macOS:
 ```
 git clone https://github.com/michal-siedlecki/telescopeWebApp
+python3 -m venv env
+source env/bin/activate
 pip install gunicorn
 ```
 
 Windows:
 ```
 git clone https://github.com/michal-siedlecki/telescopeWebApp
+python3 -m venv env
+cd env/Script/activate
 pip install waitress
 ```
 ## Using Telescope

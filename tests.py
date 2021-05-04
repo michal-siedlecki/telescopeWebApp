@@ -1,6 +1,6 @@
 import json
-import subprocess
 import unittest
+
 from app import home, calculate, GREETING_MESSAGE
 
 
@@ -26,8 +26,5 @@ class TestCalculation(unittest.TestCase):
         self.assertEqual(result, str(self.expected_result), f"Should be \n %s" % self.expected_result)
 
 
-
-
 if __name__ == '__main__':
-
     unittest.main()

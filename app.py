@@ -1,8 +1,6 @@
 import json
 from typing import Dict, ByteString, AnyStr
 
-import gunicorn.http.body
-
 from models import Graph
 
 # ================= CONST ==========================
@@ -80,7 +78,6 @@ def app(environ: Dict, start_response) -> iter:
     method = environ.get("REQUEST_METHOD")
     path = environ.get("PATH_INFO")
     body = environ.get("wsgi.input")
-    print(body.next())
     func = urls.get(path)
     if func:
         result = func(method, body)
