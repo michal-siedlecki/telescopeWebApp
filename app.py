@@ -1,51 +1,30 @@
 import json
-from typing import Dict, ByteString, Callable, AnyStr
+from typing import Dict, ByteString, AnyStr
+
+import gunicorn.http.body
 
 from models import Graph
 
-'''
-Sample request:
+# ================= CONST ==========================
 
-{
-   "beginning":"start",
-   "graph":{
-      "a":{
-         "c":4,
-         "d":2
-      },
-      "b":{
-         "a":8,
-         "d":7
-      },
-      "c":{
-         "d":6,
-         "end":3
-      },
-      "d":{
-         "end":1
-      },
-      "end":{
-         
-      },
-      "start":{
-         "a":5,
-         "b":2
-      }
-   }
-}
-
-'''
+GREETING_MESSAGE = {"Welcome": "please send me some data to handle"}
+NO_BODY_MESSAGE = {"Error": "recived request has empty body"}
 
 
 # ================= FUNCTION VIEWS =====================
+def is_valid_body(body: Dict) -> bool:
+    if not isinstance(body, Dict):
+        return False
+    return True
 
-def home(method: Callable, body=None) -> Dict:
+
+def home(method: AnyStr, body=None) -> Dict:
     data = {"None"}
     response_status = (0, 0)
     if method == "GET":
-        data = json.dumps({'Welcome': 'please send me some data to handle'})
+        data = json.dumps(GREETING_MESSAGE)
         response_status = ok_200(data)
-    elif method == "POST":
+    elif method == "POST" and is_valid_body(body):
         body_str = body.read().decode('utf-8')
         body_dict = json.loads(body_str)
         data = calculate(body_dict)
@@ -96,10 +75,12 @@ def get_bytes(resource) -> ByteString:
 
 # ================= MAIN APP =====================
 
-def app(environ: Dict, start_response)-> iter:
+def app(environ: Dict, start_response) -> iter:
+
     method = environ.get("REQUEST_METHOD")
     path = environ.get("PATH_INFO")
     body = environ.get("wsgi.input")
+    print(body.next())
     func = urls.get(path)
     if func:
         result = func(method, body)
