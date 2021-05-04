@@ -68,4 +68,4 @@ If you want to contact me you can reach me at <siedlecki.michal@gmail.com>.
 
 ## License
 
-This project uses the following license: [<MIT>](<https://github.com/michal-siedlecki/telescopeWebApp/blob/main/LICENSE>).
+This project uses the following license: MIT (<https://github.com/michal-siedlecki/telescopeWebApp/blob/main/LICENSE>).
