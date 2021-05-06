@@ -5,7 +5,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/michal-siedlecki/telescopeWebApp)
 
 
-Telescope is a no framework web app cookiecutter that allows begginers to do quickly create pure python web application.
+Telescope is a no framework web app cookiecutter that allows begginers to quickly create pure python web application.
 It can be used also to learn concepts of http and backend web development.
 
 ## Prerequisites
@@ -53,10 +53,10 @@ This repo comes in with very simple demo function that calculates shortest path 
 To contribute to Telescope, follow these steps:
 
 1. Fork this repository.
-2. 2. Create a branch: `git checkout -b <branch_name>`.
-3. 3. Make your changes and commit them: `git commit -m '<commit_message>'`
-4. 4. Push to the original branch: `git push origin <project_name>/<location>`
-5. 5. Create the pull request.
+2. Create a branch: `git checkout -b <branch_name>`.
+3. Make your changes and commit them: `git commit -m '<commit_message>'`
+4. Push to the original branch: `git push origin <project_name>/<location>`
+5. Create the pull request.
 Alternatively see the GitHub documentation on [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
 ## Contributors
