@@ -45,8 +45,8 @@ if You are on `Windows` machine:
 ```
 waitress-serve --listen=127.0.0.1:8000 app:app
 ```
-
-This repo comes in with very simple demo function that calculates shortest path in graph. Sample json request can be found in repo. 
+Now app is available under localhost:8000.
+This repo comes in with very simple demo function that calculates shortest path in graph using Dijkstra algorythm. There is a sample json request can be found in repo. 
 
 ## Contributing to Telescope
 
